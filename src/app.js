@@ -6,16 +6,19 @@ const express = require("express");
 const app = express(); //app = application
 app.get("/he*llo", (req, res) => res.send({ name: "Afjal" }));
 
-app.get("/user", [
-  (req, res, next) => {
-    console.log("Handling the user route");
-    next();
-  },
-  (req, res, next) => {
-    console.log("Handling the  2nd user route");
+app.get(
+  "/user",
+  [
+    (req, res, next) => {
+      console.log("Handling the user route");
+      next();
+    },
+    (req, res, next) => {
+      console.log("Handling the  2nd user route");
 
-    next();
-  },
+      next();
+    },
+  ],
   (req, res, next) => {
     console.log("Handling the  𝟯𝗿d user route");
 
@@ -27,7 +30,7 @@ app.get("/user", [
 
     res.send("𝟰𝘁𝗵 Response");
     next();
-  },
-]);
+  }
+);
 
 app.listen(3000, () => console.log("Server is listening on port 3000...."));
