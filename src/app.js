@@ -1,20 +1,26 @@
-//starting point of the application
 const express = require("express");
-//now we are creating a new application using express server
-//so this application is a new web server, so this server can listen
-//to incoming request
-const app = express(); //app = application
-app.get("/he*llo", (req, res) => res.send({ name: "Afjal" }));
 
-app.get("/user", (req, res, next) => {
-  console.log("Handling the 1st user route");
-  
-  next();
+const app = express();
+
+//handle Auth Middleware for all request GET, POST using app.use()
+app.use("/admin", (req, res, next) => {
+  //Logic for checking if the request is authorised
+  const token = "toke123";
+  const isAdminAuthorised = token === "token123";
+  if (isAdminAuthorised) {
+    // and now logic for fetching all the data
+    next();
+  } else {
+    res.status(401).send("Unauthorised request");
+  }
 });
-app.get("/user", (req, res) => {
-  console.log("Handling the 2nd user route");
-
-  res.send("2nd Response");
+app.get("/admin/fetchAllData", (req, res) => {
+    //logic for sending the data to the admin
+  res.send("All Data Sent");
+});
+app.get("/admin/deleteUser", (req, res) => {
+  //logic for delete the user
+  res.send("Deleted a user");
 });
 
 app.listen(3000, () => console.log("Server is listening on port 3000...."));
