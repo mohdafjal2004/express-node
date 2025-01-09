@@ -12,6 +12,22 @@ app.post("/signup", async (req, res) => {
   await user.save();
   res.send({ status: "User Saved Successfully", data: user });
 });
+
+// GET user by email
+app.get("/user", async (req, res) => {
+  const userEmail = req.body.email;
+  try {
+    const user = await UserModel.find({ email: userEmail });
+    if (user.length > 0) {
+      res.send(user);
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (error) {
+    res.status(500).send("Something went wrong");
+  }
+});
+
 connectDB()
   .then(() => {
     console.log("Datbase connection established...");
