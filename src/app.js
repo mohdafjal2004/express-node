@@ -2,17 +2,27 @@ const express = require("express");
 const connectDB = require("./config/database.js");
 const UserModel = require("./models/user.js");
 const { validateSignUpdata } = require("./Utils/validation.js");
+const bcrypt = require("bcrypt");
 const app = express();
 
 app.use(express.json());
 
-// Using a helper function to add to validation 
+// Using a helper function to add to validation
 app.post("/signup", async (req, res) => {
   const data = req.body;
 
   validateSignUpdata(req);
+  const { firstName, lastName, password, email } = req.body;
+  const passwordHash = await bcrypt.hash(password, 10);
+  
   try {
-    const user = await UserModel(data);
+    const user = await UserModel({
+      firstName,
+      lastName,
+      password: passwordHash,
+      email,
+    });
+
     await user.save();
     res.status(200).send({ status: "Success", dataResponse: user });
   } catch (error) {
