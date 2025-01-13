@@ -1,13 +1,16 @@
 const express = require("express");
 const connectDB = require("./config/database.js");
 const UserModel = require("./models/user.js");
+const { validateSignUpdata } = require("./Utils/validation.js");
 const app = express();
 
 app.use(express.json());
 
-// Update a user
+// Using a helper function to add to validation 
 app.post("/signup", async (req, res) => {
   const data = req.body;
+
+  validateSignUpdata(req);
   try {
     const user = await UserModel(data);
     await user.save();
@@ -22,7 +25,6 @@ app.patch("/user/:userId", async (req, res) => {
   const userId = req.params.userId;
   const data = req.body;
   const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
-  
 
   try {
     const isUpdateAllowed = Object.keys(data).every((k) =>
