@@ -6,18 +6,33 @@ const app = express();
 app.use(express.json());
 
 // Update a user
-app.patch("/update", async (req, res) => {
-  // Whatever the key passed in the body object use the same here
+app.post("/signup", async (req, res) => {
+  const data = req.body;
+  try {
+    const user = await UserModel(data);
+    await user.save();
+    res.status(200).send({ status: "Success", dataResponse: user });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+//findByIdAndUpdate but enabling the validation by default
+app.patch("/user", async (req, res) => {
   const userId = req.body.userId;
   const data = req.body;
   try {
     const user = await UserModel.findByIdAndUpdate(userId, data, {
       returnDocument: "after",
+      runValidators: true,
     });
-
-    res.status(200).send({ status: "Success", dataResponse: user });
+    console.log(user);
+    res.send("User updated successfully");
   } catch (error) {
-    res.status(500).send({ status: "Something went wrong", response: error });
+    res.status(400).send({
+      message: "UPDATE FAILED",
+      error: error,
+    });
   }
 });
 
