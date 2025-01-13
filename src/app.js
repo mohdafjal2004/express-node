@@ -6,11 +6,12 @@ const app = express();
 app.use(express.json());
 
 // GET all USERS
-app.get("/all", async (req, res) => {
+app.delete("/all", async (req, res) => {
   try {
-    const user = await UserModel.findById("6780060f853ec9621e948220");
 
-    res.status(200).send({ user });
+    const user = await UserModel.findByIdAndDelete("6780060f853ec9621e948220");
+
+    res.status(200).send("User deleted successfully");
   } catch (error) {
     res.status(500).send("Somethi ng went wrong");
   }
