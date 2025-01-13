@@ -5,15 +5,19 @@ const app = express();
 
 app.use(express.json());
 
-// GET all USERS
-app.delete("/all", async (req, res) => {
+// Update a user
+app.patch("/update", async (req, res) => {
+  // Whatever the key passed in the body object use the same here
+  const userId = req.body.userId;
+  const data = req.body;
   try {
+    const user = await UserModel.findByIdAndUpdate(userId, data, {
+      returnDocument: "after",
+    });
 
-    const user = await UserModel.findByIdAndDelete("6780060f853ec9621e948220");
-
-    res.status(200).send("User deleted successfully");
+    res.status(200).send({ status: "Success", dataResponse: user });
   } catch (error) {
-    res.status(500).send("Somethi ng went wrong");
+    res.status(500).send({ status: "Something went wrong", response: error });
   }
 });
 
