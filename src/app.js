@@ -17,11 +17,26 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-//findByIdAndUpdate but enabling the validation by default
+//API level validation
 app.patch("/user", async (req, res) => {
   const userId = req.body.userId;
   const data = req.body;
+  const ALLOWED_UPDATES = [
+    "userId",
+    "photoUrl",
+    "about",
+    "gender",
+    "age",
+    "skills",
+  ];
+
   try {
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Update not allowed");
+    }
     const user = await UserModel.findByIdAndUpdate(userId, data, {
       returnDocument: "after",
       runValidators: true,
