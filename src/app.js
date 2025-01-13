@@ -18,17 +18,11 @@ app.post("/signup", async (req, res) => {
 });
 
 //API level validation
-app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
   const data = req.body;
-  const ALLOWED_UPDATES = [
-    "userId",
-    "photoUrl",
-    "about",
-    "gender",
-    "age",
-    "skills",
-  ];
+  const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+  
 
   try {
     const isUpdateAllowed = Object.keys(data).every((k) =>

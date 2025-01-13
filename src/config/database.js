@@ -9,7 +9,7 @@ const connectDB = async () => {
   //Remember here we directly edit in db string at the end due to which
   //we have another database in the cluster
 };
-
+ 
 module.exports = connectDB
  
 
