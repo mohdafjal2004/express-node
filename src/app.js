@@ -14,7 +14,7 @@ app.post("/signup", async (req, res) => {
   validateSignUpdata(req);
   const { firstName, lastName, password, email } = req.body;
   const passwordHash = await bcrypt.hash(password, 10);
-  
+
   try {
     const user = await UserModel({
       firstName,
@@ -27,6 +27,24 @@ app.post("/signup", async (req, res) => {
     res.status(200).send({ status: "Success", dataResponse: user });
   } catch (error) {
     res.status(500).send(error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await UserModel.findOne({ email: email });
+    if (!user) {
+      throw new Error("Email id is not present in DB");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      res.send("Login Successful");
+    } else {
+      res.send("Password is not coorect");
+    }
+  } catch (error) {
+    res.status(404).send({ customError: error.message  });
   }
 });
 
