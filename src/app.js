@@ -5,6 +5,7 @@ const { validateSignUpdata } = require("./Utils/validation.js");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { userAuth } = require("./middlewares/authAdmin.js");
 const app = express();
 
 app.use(express.json());
@@ -56,21 +57,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    // console.log(cookies);
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("Invalid Token");
-    }
-    //Validate the token
-    const decodedToken = await jwt.verify(token, "AFJALSECRETKEY");
-    // console.log("decodedToken =>", decodedToken);
-    const { _id } = decodedToken;
-    console.log("Logged in token id is", _id);
+    const user = req.user;
 
-    const user = await UserModel.findById(_id);
     console.log("User data after login is ", user);
     if (!user) {
       throw new Error("No user found");
@@ -107,6 +97,12 @@ app.patch("/user/:userId", async (req, res) => {
       error: error,
     });
   }
+});
+
+app.post("/connectionRequest", userAuth, (req, res) => {
+  const { user } = req;
+  console.log("Sending a connection");
+  res.send(user.firstName + " send the Connection Request");
 });
 
 connectDB()
