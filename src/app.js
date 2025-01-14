@@ -36,16 +36,16 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body; 
     const user = await UserModel.findOne({ email: email });
     if (!user) {
       throw new Error("Email id is not present in DB");
     }
-    const isPasswordValid = await UserModel.validatePassword(password);
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       //create a JWT Token after offloading the task to
       //mongoose methods
-      const token = await UserModel.getJWT();
+      const token = await user.getJWT();
       console.log(token);
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),

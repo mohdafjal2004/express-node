@@ -65,8 +65,8 @@ userSchema.methods.getJWT = async function () {
 
 userSchema.methods.validatePassword = async function (passwordInputByUser) {
   //here "this" will refer to a specific document on whom operating
-  const hashPassword = await bcrypt.compare(passwordInputByUser, this.password);
-  return hashPassword;
+  const isPassComparingSuccess = await bcrypt.compare(passwordInputByUser, this.password);
+  return isPassComparingSuccess;
 };
 
 const UserModel = mongoose.model("User", userSchema);
