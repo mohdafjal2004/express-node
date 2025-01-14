@@ -41,14 +41,12 @@ app.post("/login", async (req, res) => {
     if (!user) {
       throw new Error("Email id is not present in DB");
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await UserModel.validatePassword(password);
     if (isPasswordValid) {
-      //create a JWT Token
-      const token = await jwt.sign({ _id: user._id }, "AFJALSECRETKEY", {
-        expiresIn: "0d",
-      });
+      //create a JWT Token after offloading the task to
+      //mongoose methods
+      const token = await UserModel.getJWT();
       console.log(token);
-      //add the token to cookie and send the resoponse back to the user
       res.cookie("token", token, {
         expires: new Date(Date.now() + 8 * 3600000),
       });
