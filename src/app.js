@@ -3,6 +3,7 @@ const connectDB = require("./config/database.js");
 const UserModel = require("./models/user.js");
 const { validateSignUpdata } = require("./Utils/validation.js");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const app = express();
 
@@ -42,8 +43,10 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
       //create a JWT Token
+      const token = await jwt.sign({ _id: user._id }, "AFJALSECRETKEY");
+      console.log(token);
       //add the token to cookie and send the resoponse back to the user
-      res.cookie("token", "gWHFEUKYALS4kjg5jh34v5jh34v");
+      res.cookie("token", token);
       res.send("Login Successful");
     } else {
       res.send("Password is not coorect");
@@ -54,11 +57,29 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/profile", async (req, res) => {
-  const cookies = req.cookies;
-  console.log(cookies);
-  const { token } = cookies;
-  //Validate the token
-  res.send("Reading cookies");
+  try {
+    const cookies = req.cookies;
+    // console.log(cookies);
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("Invalid Token");
+    }
+    //Validate the token
+    const decodedToken = await jwt.verify(token, "AFJALSECRETKEY");
+    // console.log("decodedToken =>", decodedToken);
+    const { _id } = decodedToken;
+    console.log("Logged in token id is", _id);
+
+    const user = await UserModel.findById(_id);
+    console.log("User data after login is ", user);
+    if (!user) {
+      throw new Error("No user found");
+    }
+
+    res.send("Reading cookies");
+  } catch (error) {
+    res.status(400).send("Error => " + error.message);
+  }
 });
 
 //API level validation
