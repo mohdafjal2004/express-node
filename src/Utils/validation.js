@@ -10,4 +10,4 @@ const validateSignUpdata = (req) => {
    }
 }; 
 module.exports = { validateSignUpdata };
-    
+     

@@ -2,10 +2,12 @@ const express = require("express");
 const connectDB = require("./config/database.js");
 const UserModel = require("./models/user.js");
 const { validateSignUpdata } = require("./Utils/validation.js");
+const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Using a helper function to add to validation
 app.post("/signup", async (req, res) => {
@@ -39,13 +41,24 @@ app.post("/login", async (req, res) => {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
+      //create a JWT Token
+      //add the token to cookie and send the resoponse back to the user
+      res.cookie("token", "gWHFEUKYALS4kjg5jh34v5jh34v");
       res.send("Login Successful");
     } else {
       res.send("Password is not coorect");
     }
   } catch (error) {
-    res.status(404).send({ customError: error.message  });
+    res.status(404).send({ customError: error.message });
   }
+});
+
+app.get("/profile", async (req, res) => {
+  const cookies = req.cookies;
+  console.log(cookies);
+  const { token } = cookies;
+  //Validate the token
+  res.send("Reading cookies");
 });
 
 //API level validation
