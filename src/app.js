@@ -36,7 +36,7 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body; 
+    const { email, password } = req.body;
     const user = await UserModel.findOne({ email: email });
     if (!user) {
       throw new Error("Email id is not present in DB");
@@ -68,7 +68,7 @@ app.get("/profile", userAuth, async (req, res) => {
       throw new Error("No user found");
     }
 
-    res.send("Reading cookies");
+    res.status(200).send("Reading cookies" + user);
   } catch (error) {
     res.status(400).send("Error => " + error.message);
   }
