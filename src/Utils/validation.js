@@ -7,7 +7,20 @@ const validateSignUpdata = (req) => {
     throw new Error("Email is not valid");
   } else if (!validator.isStrongPassword(password)) {
     throw new Error("Password is not strong enough");
-   }
-}; 
-module.exports = { validateSignUpdata };
-     
+  }
+};
+const validateProfileData = (req) => {
+  const allowedEditFields = [
+    ,
+    "firstName",
+    "lastName",
+    "about",
+    "photoUrl",
+    "gender",
+    "about",
+    "skills",
+  ];
+  const isEditAllowed = Object.keys(req.body).every((field) => allowedEditFields.includes(field));
+  return isEditAllowed
+};
+module.exports = { validateSignUpdata, validateProfileData };

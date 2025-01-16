@@ -49,4 +49,12 @@ authRouter.post("/login", async (req, res) => {
     res.status(404).send({ customError: error.message });
   }
 });
+
+authRouter.post("/logout", async (req, res) => {
+    // Set the cookie value to null and also expriring it
+    //And also DO the cleanup activity here
+  res.cookie("token", null, {
+    expires: new Date(Date.now()),
+  }).send("Logout Successful")
+});
 module.exports = authRouter;
