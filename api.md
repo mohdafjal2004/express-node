@@ -17,10 +17,10 @@ POST /request/review/accepted/:requestId
 POST /request/review/rejected/:requestId
 
 # userRouter 
+<!-- Getting all the connection request through which user will either accept or reject -->
+GET /user/request/received
 <!-- Get connection of user after request successfull on either side-->
 GET /user/connection
-<!-- Getting all the connection request through which user will either accept or reject -->
-GET /user/request
 <!-- API for FEED -->
 GET /user/feed
 

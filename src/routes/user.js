@@ -1,5 +1,7 @@
 const express = require("express");
 const UserModel = require("../models/user");
+const { userAuth } = require("../middlewares/authAdmin");
+const ConnectionRequest = require("../models/connectionRequest");
 const userRouter = express.Router();
 //API level validation
 userRouter.patch("/user/:userId", async (req, res) => {
@@ -27,4 +29,19 @@ userRouter.patch("/user/:userId", async (req, res) => {
     });
   }
 });
+
+// Get all the pending conection request for the loggedin User
+userRouter.get("/user/request/received", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const connectionRequests = await ConnectionRequest.find({
+      toUserId: loggedInUser._id,
+      status: "interested",
+    }).populate("fromUserId", ["firstName", "lastName"]);
+    res.json({ message: "Data fetched successfully", connectionRequests });
+  } catch (error) {
+    res.status(400).send("ERROR:" + error.message);
+  }
+});
+
 module.exports = userRouter;

@@ -4,6 +4,7 @@ const ConnectionRequest = require("../models/connectionRequest");
 const UserModel = require("../models/user");
 const requestRouter = express.Router();
 
+// Here Both the APIs are giving the access of same document
 requestRouter.post(
   "/request/send/:status/:toUserId",
   userAuth,
@@ -55,6 +56,46 @@ requestRouter.post(
       });
     } catch (error) {
       res.status(400).send("ERROR:" + error.message);
+    }
+  }
+);
+
+requestRouter.post(
+  "/request/review/:status/:requestId",
+  userAuth,
+  async (req, res) => {
+    try {
+      // Afjal -> Elon
+      // If Elon is logged in, means here he is getting the request after
+      //logged in, so loggedinUser = toUserId
+      const loggedInUser = req.user;
+      const { requestId, status } = req.params;
+      // Validate the Status
+      const allowedInterested = ["accepted", "rejected"];
+      if (!allowedInterested.includes(status)) {
+        return res.status(400).json({ message: "Status not allowed" });
+      }
+
+      //So elon can only accepted or rejected only if the connection request
+      // status is in "interested" state
+      //   request id should be valid
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
+
+      if (!connectionRequest) {
+        return res
+          .status(400)
+          .json({ message: "Connection request not found" });
+      }
+
+      connectionRequest.status = status;
+      const data = await connectionRequest.save();
+      res.json({ message: "Connection Request" + status, data });
+    } catch (error) {
+      res.status(400).send("Error :" + error.message);
     }
   }
 );
